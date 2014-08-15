@@ -1,3 +1,4 @@
+var q = require('q');
 var Orchestrator = require('./index.js');
 
 var orchestrator = new Orchestrator();
@@ -25,10 +26,7 @@ orchestrator.task('bar', function bar(done) {
 });
 
 function baz(done) {
-  setTimeout(function(){
-    console.log('finishing baz');
-    done(null, 'baz');
-  }, 4000);
+  return q.when('promise')
 }
 
 
