@@ -1,21 +1,12 @@
 'use strict';
 
-var EE = require('events').EventEmitter;
-var util = require('util');
-
-var asyncDone = require('async-done');
-
 function DefaultRegistry(){
   if(!(this instanceof DefaultRegistry)){
     return new DefaultRegistry();
   }
 
-  EE.call(this);
-
   this.tasks = {};
 }
-
-util.inherits(DefaultRegistry, EE);
 
 DefaultRegistry.prototype.get = function(name){
   return this.tasks[name];
@@ -38,28 +29,6 @@ DefaultRegistry.prototype.all = function(){
   var tasks = this.tasks;
   var taskNames = Object.keys(tasks);
   return taskNames.map(this.normalize, this);
-};
-
-DefaultRegistry.prototype.time = function(task){
-  var evt = this.normalize(task);
-
-  var self = this;
-
-  function timeTask(cb){
-    var startTime = process.hrtime();
-    evt.startTime = startTime;
-    self.emit('start', evt);
-
-    asyncDone(evt.fn, function(err, res){
-      var duration = process.hrtime(startTime);
-      evt.duration = duration;
-      self.emit('stop', evt);
-
-      cb(err, res);
-    });
-  }
-
-  return timeTask;
 };
 
 DefaultRegistry.prototype.normalize = function(name, fn){
