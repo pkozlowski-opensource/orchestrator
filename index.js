@@ -1,6 +1,6 @@
 'use strict';
 
-var bach = require('bach');
+var nowAndLater = require('now-and-later');
 
 var normalizeArgs = require('./lib/normalizeArgs');
 var validateRegistry = require('./lib/validateRegistry');
@@ -42,12 +42,12 @@ Orchestrator.prototype.setRegistry = function(newRegistry){
 
 Orchestrator.prototype.series = function(){
   var args = normalizeArgs(this.registry, arguments);
-  return bach.series(args);
+  return nowAndLater.series(args);
 };
 
 Orchestrator.prototype.parallel = function(){
   var args = normalizeArgs(this.registry, arguments);
-  return bach.parallel(args);
+  return nowAndLater.parallel(args);
 };
 
 module.exports = Orchestrator;
