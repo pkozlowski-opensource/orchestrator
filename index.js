@@ -3,8 +3,7 @@
 var events = require('events');
 var util = require('util');
 
-var bach = require('bach');
-var createTimer = require('async-time');
+var nowAndLater = require('now-and-later');
 
 var normalizeArgs = require('./lib/normalizeArgs');
 var validateRegistry = require('./lib/validateRegistry');
@@ -15,7 +14,6 @@ function Orchestrator(registry){
   events.EventEmitter.call(this);
   this.registry = registry || new DefaultRegistry();
   validateRegistry(this.registry);
-  this.asyncTime = createTimer(this);
 }
 util.inherits(Orchestrator, events.EventEmitter);
 
@@ -33,9 +31,7 @@ Orchestrator.prototype.task = function(taskName, fn){
   }
 
   if(fn){
-    return registry.set(taskName, function(cb){
-      self.asyncTime(fn, cb);
-    });
+    return registry.set(taskName, fn);
   }
 
   return registry.get(taskName);
@@ -52,12 +48,20 @@ Orchestrator.prototype.setRegistry = function(newRegistry){
 
 Orchestrator.prototype.series = function(){
   var args = normalizeArgs(this, arguments);
-  return bach.series(args);
+  return nowAndLater.series(args, {
+    before: function (fn) { console.log('Starting ', fn.name, Date.now());},
+    after: function (fn) { console.log('Stopping ', fn.name, Date.now());},
+    error: function (fn) { console.log('Error ', fn.name, Date.now());}
+  });
 };
 
 Orchestrator.prototype.parallel = function(){
   var args = normalizeArgs(this, arguments);
-  return bach.parallel(args);
+  return nowAndLater.parallel(args, {
+    before: function (fn) { console.log('Starting ', fn.name, Date.now());},
+    after: function (fn) { console.log('Stopping ', fn.name, Date.now());},
+    error: function (fn) { console.log('Error ', fn.name, Date.now());}
+  });
 };
 
 module.exports = Orchestrator;
