@@ -13,6 +13,8 @@
     "compose"
   ],
   "dependencies": {
+    "async-done": "^0.3.0",
+    "now-and-later": "^0.0.1"
   },
   "devDependencies": {
     "lab": "^3.1.1",
